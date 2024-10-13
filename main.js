@@ -1,29 +1,24 @@
-const { program } = require('commander');
 const http = require('http');
-const fs = require('fs');
+const fs = require('fs').promises;
+const path = require('path');
+const { program } = require('commander');
 
-
+// Налаштування параметрів командного рядка
 program
-    .requiredOption('-h, --host', 'Address of server')
-    .requiredOption('-p, --port', 'Server port')
-    .requiredOption('-c, --cache', 'Directory path stores cashed data');
-
-program.parse(process.argv);
+  .requiredOption('-h, --host <host>', 'Адреса сервера')
+  .requiredOption('-p, --port <port>', 'Порт сервера')
+  .requiredOption('-c, --cache <cache>', 'Шлях до кешу')
+  .parse(process.argv);
 
 const options = program.opts();
 
-// options.host
-const requestListener = function (req, res){
-    res.write(200);
-    res.end('My not first server');
-}
+// Створення веб-сервера
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Сервер працює!');
+});
 
-const server = http.createServer(requestListener);
-
-const host = options.host;
-const port = options.port;
-
-
-server.listen(port, host, () =>{    
-    console.log(`server is running on http://${host}:${port}`)
+// Запуск сервера
+server.listen(options.port, options.host, () => {
+    console.log(`Сервер запущено на http://${options.host}:${options.port}`);
 });
